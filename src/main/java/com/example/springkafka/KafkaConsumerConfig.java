@@ -27,6 +27,7 @@ public class KafkaConsumerConfig {
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, "20971520");
     props.put(ConsumerConfig.FETCH_MAX_BYTES_CONFIG, "20971520");
+    props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     return new DefaultKafkaConsumerFactory<>(props);
   }
 
@@ -34,6 +35,7 @@ public class KafkaConsumerConfig {
       String groupId) {
     ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
     factory.setConsumerFactory(consumerFactory(groupId));
+//    factory.setRecordFilterStrategy(record -> record.value().contains("filter txt"));
     return factory;
   }
 
