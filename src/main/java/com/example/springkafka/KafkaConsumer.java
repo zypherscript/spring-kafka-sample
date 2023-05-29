@@ -27,4 +27,9 @@ public class KafkaConsumer {
       @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
     log.info("Received Message: " + message + " from partition: " + partition);
   }
+
+  @KafkaListener(groupId = "demo", topics = "demo-greeting", containerFactory = "greetingKafkaListenerContainerFactory")
+  public void greetingListen(Greeting greeting) {
+    log.info("Received Message: " + greeting.toString());
+  }
 }

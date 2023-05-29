@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -26,19 +25,17 @@ class SpringKafkaApplicationTests {
 
   @Captor
   private ArgumentCaptor<String> argumentCaptor;
+  @Captor
+  private ArgumentCaptor<Greeting> greetingArgumentCaptor;
 
   @Autowired
   private KafkaProducer kafkaProducer;
 
-  private final String message = "test";
-
-  @BeforeEach
-  void setUp() {
-    kafkaProducer.send("demo", message);
-  }
-
   @Test
   void testKafkaConsumer() {
+    String message = "test";
+    kafkaProducer.send("demo", message);
+
     verify(kafkaConsumer, timeout(5000)).listenWithHeaders(argumentCaptor.capture(),
         anyInt());
     assertThat(argumentCaptor.getValue()).isEqualTo(message);
@@ -47,4 +44,12 @@ class SpringKafkaApplicationTests {
     assertThat(argumentCaptor.getValue()).isEqualTo(message);
   }
 
+  @Test
+  void testKafkaGreetingConsumer() {
+    var greeting = new Greeting("Sup", "G");
+    kafkaProducer.greeting("demo-greeting", greeting);
+
+    verify(kafkaConsumer, timeout(5000)).greetingListen(greetingArgumentCaptor.capture());
+    assertThat(greetingArgumentCaptor.getValue().toString()).isEqualTo(greeting.toString());
+  }
 }

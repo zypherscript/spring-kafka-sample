@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 @Configuration
 public class KafkaProducerConfig {
@@ -19,13 +20,7 @@ public class KafkaProducerConfig {
 
   @Bean
   public ProducerFactory<String, String> producerFactory() {
-    Map<String, Object> props = new HashMap<>();
-    props.put(
-        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-        bootstrapAddress);
-    props.put(
-        ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-        StringSerializer.class);
+    var props = getDefaultProducerConfig();
     props.put(
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
         StringSerializer.class);
@@ -33,7 +28,28 @@ public class KafkaProducerConfig {
   }
 
   @Bean
+  public ProducerFactory<String, Greeting> greetingProducerFactory() {
+    var props = getDefaultProducerConfig();
+    props.put(
+        ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+        JsonSerializer.class);
+    return new DefaultKafkaProducerFactory<>(props);
+  }
+
+  private Map<String, Object> getDefaultProducerConfig() {
+    Map<String, Object> props = new HashMap<>();
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    return props;
+  }
+
+  @Bean
   public KafkaTemplate<String, String> kafkaTemplate() {
     return new KafkaTemplate<>(producerFactory());
+  }
+
+  @Bean
+  public KafkaTemplate<String, Greeting> greetingKafkaTemplate() {
+    return new KafkaTemplate<>(greetingProducerFactory());
   }
 }
