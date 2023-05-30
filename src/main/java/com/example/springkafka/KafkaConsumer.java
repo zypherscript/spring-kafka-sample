@@ -1,6 +1,7 @@
 package com.example.springkafka;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.PartitionOffset;
 import org.springframework.kafka.annotation.TopicPartition;
@@ -27,8 +28,14 @@ public class KafkaConsumer {
       @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
     log.info("Received Message: " + message + " from partition: " + partition);
   }
+}
 
-  @KafkaListener(groupId = "demo", topics = "demo-greeting", containerFactory = "greetingKafkaListenerContainerFactory")
+@Component
+@Slf4j
+@KafkaListener(groupId = "demo", topics = "demo-greeting", containerFactory = "greetingKafkaListenerContainerFactory")
+class GreetingListener {
+
+  @KafkaHandler
   public void greetingListen(Greeting greeting) {
     log.info("Received Message: " + greeting.toString());
   }

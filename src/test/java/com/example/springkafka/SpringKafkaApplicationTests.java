@@ -23,6 +23,9 @@ class SpringKafkaApplicationTests {
   @SpyBean
   private KafkaConsumer kafkaConsumer;
 
+  @SpyBean
+  private GreetingListener greetingListener;
+
   @Captor
   private ArgumentCaptor<String> argumentCaptor;
   @Captor
@@ -49,7 +52,7 @@ class SpringKafkaApplicationTests {
     var greeting = new Greeting("Sup", "G");
     kafkaProducer.greeting("demo-greeting", greeting);
 
-    verify(kafkaConsumer, timeout(5000)).greetingListen(greetingArgumentCaptor.capture());
+    verify(greetingListener, timeout(5000)).greetingListen(greetingArgumentCaptor.capture());
     assertThat(greetingArgumentCaptor.getValue().toString()).isEqualTo(greeting.toString());
   }
 }
