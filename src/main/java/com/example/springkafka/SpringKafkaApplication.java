@@ -18,6 +18,9 @@ public class SpringKafkaApplication {
   @Profile("test")
   @Bean
   public ApplicationRunner runner(KafkaProducer kafkaProducer) {
-    return args -> kafkaProducer.send("demo", "test");
+    return args -> {
+      kafkaProducer.send("demo", "test");
+      kafkaProducer.greeting("demo-greeting", new Greeting("testMsg", "testName"));
+    };
   }
 }
